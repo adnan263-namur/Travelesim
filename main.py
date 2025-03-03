@@ -4,6 +4,7 @@ import pandas as pd
 import json
 import webbrowser
 import os
+import urllib.parse
 
 # Load the datasets
 file_path = os.path.dirname(os.path.abspath(__file__))
@@ -482,16 +483,21 @@ def handle_submit(submit_clicks, name, email, phone, selected_dataset, region, d
        )
        print(f"📝 Order Summary:\n{order_summary}")
 
+       # Define email parameters
+       recipient = "esimautomation@gmail.com"
+       subject = f"New order for eSIM for {region}"
+       body = order_summary
 
-       # Create the mailto link
-       subject = f"New order for eSIM for{region}"
-       body = order_summary.replace("\n", "%0A")  # Replace newlines with URL-encoded newlines
-       mailto_link = f"mailto:esimautomation@gmail.com?subject={subject}&body={body}"
+       # Encode subject and body for URL
+       encoded_subject = urllib.parse.quote(subject)
+       encoded_body = urllib.parse.quote(body)
 
+       # Construct the Outlook Web URL
+       outlook_url = f"https://outlook.office.com/mail/deeplink/compose?to={recipient}&subject={encoded_subject}&body={encoded_body}"
 
-       # Open the mailto link in the user's default email client
-       print(f"📧 Opening email client with mailto link: {mailto_link}")
-       webbrowser.open(mailto_link)
+       # Open the Outlook Web mail compose page
+       print(f"📧 Opening Outlook with pre-filled email: {outlook_url}")
+       webbrowser.open(outlook_url)
 
 
        return True  # Mark form as submitted
