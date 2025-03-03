@@ -499,12 +499,9 @@ def handle_submit(submit_clicks, name, email, phone, selected_dataset, region, d
        outlook_url = f"https://outlook.office.com/mail/deeplink/compose?to=esimautomation@gmail.com&subject={encoded_subject}&body={encoded_body}"
 
        # Open the Outlook deeplink in default browser
-       print(outlook_url)
+       print(f"📧 Opening Outlook email composer: {outlook_url}")
+       webbrowser.open(outlook_url)
 
 
        return True  # Mark form as submitted
    return dash.no_update
-
-
-
-app.run_server(host='0.0.0.0', port=8000, debug=False)
