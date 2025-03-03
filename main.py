@@ -488,16 +488,18 @@ def handle_submit(submit_clicks, name, email, phone, selected_dataset, region, d
        subject = f"New order for eSIM for {region}"
        body = order_summary
 
-       # Encode subject and body for URL
+       # Create the Outlook deeplink
+       subject = f"New order for eSIM for{region}"
+       body = order_summary  # Use original body with newlines intact
+
+       # URL-encode components
        encoded_subject = urllib.parse.quote(subject)
        encoded_body = urllib.parse.quote(body)
 
-       # Construct the Outlook Web URL
-       outlook_url = f"https://outlook.office.com/mail/deeplink/compose?to={recipient}&subject={encoded_subject}&body={encoded_body}"
+       outlook_url = f"https://outlook.office.com/mail/deeplink/compose?to=esimautomation@gmail.com&subject={encoded_subject}&body={encoded_body}"
 
-       # Open the Outlook Web mail compose page
-       print(f"📧 Opening Outlook with pre-filled email: {outlook_url}")
-       webbrowser.open(outlook_url)
+       # Open the Outlook deeplink in default browser
+       print(outlook_url)
 
 
        return True  # Mark form as submitted
