@@ -3,12 +3,13 @@ from dash import dcc, html, Input, Output, State, ALL
 import pandas as pd
 import json
 import webbrowser
-
+import os
 
 # Load the datasets
-file_path = r"C:\Users\TV\PycharmProjects\pythonProject5"
-country_df = pd.read_excel(f"{file_path}\\Country.xlsx", sheet_name="Country")
-region_df = pd.read_excel(f"{file_path}\\Region.xlsx", sheet_name="Region")
+file_path = os.path.dirname(os.path.abspath(__file__))
+# Load the datasets using relative paths
+country_df = pd.read_excel(os.path.join(file_path, "Country.xlsx"), sheet_name="Country")
+region_df = pd.read_excel(os.path.join(file_path, "Region.xlsx"), sheet_name="Region")
 
 
 # Clean data (strip spaces and drop NaN values)
@@ -497,7 +498,6 @@ def handle_submit(submit_clicks, name, email, phone, selected_dataset, region, d
    return dash.no_update
 
 
-if __name__ == '__main__':
-   print("Dash app is running on http://127.0.0.1:8050/ - Open this link in your browser.")
-   webbrowser.open("http://127.0.0.1:8050/")
-   app.run_server(debug=True, use_reloader=False)
+
+app.run_server(host='0.0.0.0', port=8000, debug=False)
+
