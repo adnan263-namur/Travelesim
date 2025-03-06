@@ -198,8 +198,11 @@ app.layout = html.Div(
        # Store to hold selected row data
        dcc.Store(id="selected-row-store", data={}),
        # Store to track form submission
-       dcc.Store(id="form-submitted-store", data=False)
+       dcc.Store(id="form-submitted-store", data=False),
+       dcc.Location(id='redirect-location', refresh=True)
+
    ]
+
 )
 
 
@@ -448,7 +451,7 @@ def show_warning(submit_clicks, name, email, phone):
 
 # Handle form submission and send email via mailto
 @app.callback(
-   Output('form-submitted-store', 'data'),
+   Output('redirect-location', 'href'),
    Input('submit-button', 'n_clicks'),
    [State('name-input', 'value'),
     State('email-input', 'value'),
@@ -461,47 +464,38 @@ def show_warning(submit_clicks, name, email, phone):
    prevent_initial_call=True  # Prevent callback from firing on initial load
 )
 def handle_submit(submit_clicks, name, email, phone, selected_dataset, region, data, days, selected_row):
-   if submit_clicks > 0:
-       # Check if all fields are filled
-       if not all([name, email, phone]):
-           return dash.no_update  # Do not proceed if any field is empty
+    if submit_clicks > 0:
+        # Check if all fields are filled
+        if not all([name, email, phone]):
+            return dash.no_update  # Do not proceed if any field is empty
 
+        # Use selected_row to retrieve Traffic Policy and ID.
+        traffic_policy = selected_row.get("Traffic Policy", "N/A") if selected_row else "N/A"
+        id_value = selected_row.get("ID", "N/A") if selected_row else "N/A"
+        order_summary = (
+            f"Full Name: {name}\n"
+            f"Email: {email}\n"
+            f"Mobile number: {phone}\n"
+            f"Dataset: {selected_dataset}\n"
+            f"Region: {region}\n"
+            f"Data: {data} GB\n"
+            f"Validity: {days} Days\n"
+            f"Traffic Policy: {traffic_policy}\n"
+            f"ID: {id_value}"
+        )
+        print(f"📝 Order Summary:\n{order_summary}")
 
-       # Use selected_row to retrieve Traffic Policy and ID.
-       traffic_policy = selected_row.get("Traffic Policy", "N/A") if selected_row else "N/A"
-       id_value = selected_row.get("ID", "N/A") if selected_row else "N/A"
-       order_summary = (
-           f"Full Name: {name}\n"
-           f"Email: {email}\n"
-           f"Mobile number: {phone}\n"
-           f"Dataset: {selected_dataset}\n"
-           f"Region: {region}\n"
-           f"Data: {data} GB\n"
-           f"Validity: {days} Days\n"
-           f"Traffic Policy: {traffic_policy}\n"
-           f"ID: {id_value}"
-       )
-       print(f"📝 Order Summary:\n{order_summary}")
+        # URL-encode components
+        encoded_subject = urllib.parse.quote(f"New order for eSIM for {region}")
+        encoded_body = urllib.parse.quote(order_summary)
 
-       # Define email parameters
-       recipient = "esimautomation@gmail.com"
-       subject = f"New order for eSIM for {region}"
-       body = order_summary
+        outlook_url = f"https://outlook.office.com/mail/deeplink/compose?to=esimautomation@gmail.com&subject={encoded_subject}&body={encoded_body}"
 
-       # Create the Outlook deeplink
-       subject = f"New order for eSIM for{region}"
-       body = order_summary  # Use original body with newlines intact
+        print(f"📧 Opening Outlook email composer: {outlook_url}")
 
-       # URL-encode components
-       encoded_subject = urllib.parse.quote(subject)
-       encoded_body = urllib.parse.quote(body)
+        # Return a link component for redirection
+        # return html.Script(f"window.location.href = '{outlook_url}';")
+        return outlook_url
+    return dash.no_update
 
-       outlook_url = f"https://outlook.office.com/mail/deeplink/compose?to=esimautomation@gmail.com&subject={encoded_subject}&body={encoded_body}"
-
-       # Open the Outlook deeplink in default browser
-       print(f"📧 Opening Outlook email composer: {outlook_url}")
-       webbrowser.open(outlook_url)
-
-
-       return True  # Mark form as submitted
-   return dash.no_update
+app.run_server(host='0.0.0.0', port=8000, debug=False)
