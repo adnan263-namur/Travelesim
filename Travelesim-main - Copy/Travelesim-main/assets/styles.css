@@ -1,0 +1,60 @@
+/* For table headers */
+#data-table th {
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+/* Hover effect for headers */
+#data-table th:hover {
+    transform: translateY(-2px);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    background-color: #f0f0ff;  /* Light purple background on hover */
+}
+
+/* For table cells/columns */
+#data-table td {
+    transition: all 0.2s ease;
+}
+
+/* Hover effect for cells */
+#data-table td:hover {
+    transform: translateY(-2px);
+    background-color: #89cbfa;  /* Very light purple */
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+#order-button {
+   box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3);
+   transition: all 0.3s ease;
+}
+
+
+#order-button:hover {
+   box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.4);
+   transform: translateY(-4px);
+}
+
+
+#order-button, #submit-button {
+   box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3);
+   transition: all 0.3s ease;
+}
+
+
+#order-button:hover, #submit-button:hover {
+   box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.4);
+   transform: translateY(-4px);
+}
+
+
+#order-button, #submit-button, #close-button {
+   box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3);
+   transition: all 0.3s ease;
+}
+
+
+#order-button:hover, #submit-button:hover, #close-button:hover {
+   box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.4);
+   transform: translateY(-4px);
+}
+
