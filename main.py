@@ -292,7 +292,8 @@ def update_table(selected_dataset, selected_region, selected_data, selected_days
 
 
        # Define required columns for display; exclude "ID" from the table.
-       display_columns = ['Name', 'Coverage', 'RRP info', 'Wi-Fi Hotspot', 'Traffic Policy']
+       display_columns = ['Name', 'Coverage', 'Wi-Fi Hotspot',
+                          'Traffic Policy']
        # Use only display_columns if available
        filtered_df = filtered_df[[col for col in display_columns if col in filtered_df.columns]]
 
@@ -480,7 +481,6 @@ def handle_submit(submit_clicks, name, email, phone, selected_dataset, region, d
             f"Data: {data} GB\n"
             f"Validity: {days} Days\n"
             f"Traffic Policy: {traffic_policy}\n"
-            f"<b>Price:</b> {selected_row.get('RRP info', 'N/A')}<br>"
             f"ID: {id_value}"
         )
         print(f"📝 Order Summary:\n{order_summary}")
