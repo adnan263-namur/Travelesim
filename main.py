@@ -480,7 +480,7 @@ def handle_submit(submit_clicks, name, email, phone, selected_dataset, region, d
             f"Data: {data} GB\n"
             f"Validity: {days} Days\n"
             f"Traffic Policy: {traffic_policy}\n"
-            f"<b>Price:</b> {selected_row.get('RRP info', 'N/A')}<br>"
+            f"Price: {selected_row.get('RRP info', 'N/A')}\n"
             f"ID: {id_value}"
         )
         print(f"📝 Order Summary:\n{order_summary}")
