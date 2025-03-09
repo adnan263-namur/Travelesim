@@ -195,6 +195,8 @@ app.layout = html.Div(
                "z-index": "999"
            }
        ),
+       # Add this with your existing stores
+       dcc.Store(id='selected-row-index-store', data=None),
        # Store to hold selected row data
        dcc.Store(id="selected-row-store", data={}),
        # Store to track form submission
@@ -271,15 +273,16 @@ def update_days_dropdown(selected_dataset, selected_region, selected_data):
     Input('region-dropdown', 'value'),
     Input('data-dropdown', 'value'),
     Input('days-dropdown', 'value')]
+   [State('selected-row-index-store', 'data')]
 )
-def update_table(selected_dataset, selected_region, selected_data, selected_days):
+def update_table(selected_dataset, selected_region, selected_data, selected_days, selected_index):
    try:
        if selected_dataset == 'Country':
            df = country_df
        elif selected_dataset == 'Region':
            df = region_df
        else:
-           return html.Div("Please select a dataset.", style={"color": "red"})
+           return html.Div("Please select Region for multiple countries OR Country for a single country", style={"color": "red"})
 
 
        filtered_df = df.copy()
@@ -326,7 +329,10 @@ def update_table(selected_dataset, selected_region, selected_data, selected_days
                            html.Td(filtered_df.iloc[i][col], style={"padding": "8px", "border": "1px solid #ddd",
                                                                     "transition": "all 0.2s ease"})
                            for col in filtered_df.columns],
-                       style={"cursor": "pointer", "background-color": "#f9f9f9"},
+                        style={
+                            "cursor": "pointer",
+                            "background-color": "#89cbfa" if i == selected_index else "#f9f9f9"
+                        },
                        n_clicks=0
                    ) for i in range(len(filtered_df))
                ])
@@ -336,7 +342,6 @@ def update_table(selected_dataset, selected_region, selected_data, selected_days
    except Exception as e:
        print(f"❌ Error in update_table: {e}")
        return html.Div("❌ An error occurred while updating the table.", style={"color": "red"})
-
 
 # Enable/disable the "Order the eSIM now" button based on row selection.
 @app.callback(
@@ -350,27 +355,46 @@ def enable_order_button(row_clicks):
    return True
 
 
-# Store the data of the selected row in a dcc.Store.
 @app.callback(
-   Output('selected-row-store', 'data'),
-   Input({'type': 'table-row', 'index': ALL}, 'n_clicks'),
-   [State('dataset-dropdown', 'value'),
-    State('region-dropdown', 'value'),
-    State('data-dropdown', 'value'),
-    State('days-dropdown', 'value')]
+    [Output('selected-row-index-store', 'data'),
+     Output('selected-row-store', 'data')],
+    [Input({'type': 'table-row', 'index': ALL}, 'n_clicks')],
+    [State('selected-row-index-store', 'data'),
+     State('dataset-dropdown', 'value'),
+     State('region-dropdown', 'value'),
+     State('data-dropdown', 'value'),
+     State('days-dropdown', 'value')]
 )
-def store_selected_row(row_clicks, selected_dataset, selected_region, selected_data, selected_days):
-   ctx = dash.callback_context
-   if not ctx.triggered:
-       return dash.no_update
+def handle_row_selection(clicks, current_index, dataset, region, data, days):
+    ctx = dash.callback_context
+    if not ctx.triggered:
+        return dash.no_update, dash.no_update
 
+    # Get clicked row index
+    try:
+        triggered_id = json.loads(ctx.triggered[0]['prop_id'].split('.')[0])
+        clicked_index = triggered_id['index']
+    except:
+        return dash.no_update, dash.no_update
 
-   if selected_dataset == 'Country':
-       df = country_df
-   elif selected_dataset == 'Region':
-       df = region_df
-   else:
-       return dash.no_update
+    # Toggle selection if clicking the same row
+    new_index = clicked_index if clicked_index != current_index else None
+
+    # Get the corresponding row data
+    if dataset == 'Country':
+        df = country_df
+    else:
+        df = region_df
+        
+    try:
+        filtered_df = df[(df['Region'] == region) & 
+                        (df['Data (GB)'] == data) & 
+                        (df['Validity (Days)'] == days)]
+        row_data = filtered_df.iloc[clicked_index].to_dict() if new_index is not None else {}
+    except:
+        row_data = {}
+
+    return new_index, row_data
 
 
    # Recreate filtered dataframe as in update_table.
