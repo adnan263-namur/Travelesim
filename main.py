@@ -261,7 +261,7 @@ def update_days_dropdown(selected_dataset, selected_region, selected_data):
 
 
    days_options = df.groupby(['Region', 'Data (GB)'])['Validity (Days)'].unique().to_dict()
-   return [{'label': d, 'value': d} for d in days_options.get((selected_region, selected_data), [])]
+   return [{'label': d, 'value': d} for d in sorted(days_options.get((selected_region, selected_data), []), reverse=True)]
 
 
 # Update table based on selections and render clickable rows.
