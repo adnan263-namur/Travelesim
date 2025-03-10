@@ -239,7 +239,7 @@ def update_data_dropdown(selected_dataset, selected_region):
 
 
    data_options = df.groupby('Region')['Data (GB)'].unique().to_dict()
-   return [{'label': d, 'value': d} for d in sorted(data_options.get(selected_region, []), reverse=True)]
+   return [{'label': d, 'value': d} for d in data_options.get(selected_region, [])]
 
 
 # Update Validity dropdown based on Data selection
@@ -261,7 +261,7 @@ def update_days_dropdown(selected_dataset, selected_region, selected_data):
 
 
    days_options = df.groupby(['Region', 'Data (GB)'])['Validity (Days)'].unique().to_dict()
-   return [{'label': d, 'value': d} for d in sorted(days_options.get(selected_data, []), reverse=True)]
+   return [{'label': d, 'value': d} for d in days_options.get((selected_region, selected_data), [])]
 
 
 # Update table based on selections and render clickable rows.
